@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <name>Acquisition</name>
+  <description>Type system descriptor for CHV acquisition phase</description>
+  <version>1.0</version>
+  <vendor/>
+  <types>
+    <typeDescription>
+      <name>fr.lirmm.advanse.acquisition.type.BioEntity</name>
+      <description>A potential BioMedical entity, regardless of the expertise level</description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+    <features>
+        <featureDescription>
+          <name>NormalizedForm</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+  <typeDescription>
+      <name>fr.lirmm.advanse.acquisition.type.PatEntity</name>
+      <description>BioMedical entity which expertise level is patient</description>
+      <supertypeName>fr.lirmm.advanse.acquisition.type.BioEntity</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>fr.lirmm.advanse.acquisition.type.MedEntity</name>
+      <description/>
+      <supertypeName>fr.lirmm.advanse.acquisition.type.BioEntity</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>fr.lirmm.advanse.acquisition.type.Post</name>
+      <description>Model a single post on a forum</description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>SubForum</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>Author</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>Id</name>
+          <description/>
+          <rangeTypeName>uima.cas.Long</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>Thread</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>Title</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+  <typeDescription>
+      <name>fr.lirmm.advanse.acquisition.type.ContextTerm</name>
+      <description>A term (ngram) that should be taken in account in context computation</description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>NormalizedForm</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+  </types>
+</typeSystemDescription>
