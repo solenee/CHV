@@ -186,12 +186,19 @@ public class CasToHtmlWriter extends JCasAnnotator_ImplBase {
 				int index = -1;
 				searchIn = str;
 				while ( (index = searchIn.indexOf(medTerm, fromIndex)) != -1 ) {
+					String securityString = null;
+					if (index > 0) {
+						securityString = searchIn.substring(index-1,
+								index + medTerm.length() + 1);
+					} else {
+						securityString = searchIn.substring(index,
+								index + medTerm.length() + 1);
+					}
 					if (ReaderPOC.exactMatch(medTerm,
-							searchIn.substring(index, index + medTerm.length() + 1))) {
+							securityString)) {
 						logger.log(Level.INFO, medTerm
-								+ " EXISTS : "
-								+ searchIn.substring(index, index + medTerm.length()
-										+ 1));
+								+ " EXISTS : #"
+								+ securityString +"#");
 						txtHtml = searchIn.substring(0, index)
 								+"<i id=\"medecin\">"
 								+ searchIn.substring(index, index + medTerm.length())
@@ -215,12 +222,19 @@ public class CasToHtmlWriter extends JCasAnnotator_ImplBase {
 				int index = -1;
 				searchIn = str;
 				while ( (index = searchIn.indexOf(patTerm, fromIndex)) != -1 ) {
+					String securityString = null;
+					if (index > 0) {
+						securityString = searchIn.substring(index-1,
+								index + patTerm.length() + 1);
+					} else {
+						securityString = searchIn.substring(index,
+								index + patTerm.length() + 1);
+					}
 					if (ReaderPOC.exactMatch(patTerm,
-							searchIn.substring(index, index + patTerm.length() + 1))) {
+							securityString)) {
 						logger.log(Level.INFO, patTerm
-								+ " EXISTS : "
-								+ searchIn.substring(index, index + patTerm.length()
-										+ 1));
+								+ " EXISTS : #"
+								+ securityString +"#");
 						txtHtml = searchIn.substring(0, index)
 								+"<i id=\"patient\">"
 								+ searchIn.substring(index, index + patTerm.length())

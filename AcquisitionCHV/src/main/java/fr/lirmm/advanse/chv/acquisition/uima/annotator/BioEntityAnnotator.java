@@ -88,14 +88,20 @@ public class BioEntityAnnotator extends JCasAnnotator_ImplBase {
 				int index = -1;
 				searchIn = str;
 				while ( (index = searchIn.indexOf(medTerm, fromIndex)) != -1 ) {
+					String securityString = null;
+					if (index > 0) {
+						securityString = searchIn.substring(index-1,
+								index + medTerm.length() + 1);
+					} else {
+						securityString = searchIn.substring(index,
+								index + medTerm.length() + 1);
+					}
 					if (ReaderPOC.exactMatch(medTerm,
-							searchIn.substring(index,
-									index + medTerm.length() + 1))) {
+							securityString)) {
 						containsEntity = true;
 						logger.log(Level.INFO, medTerm
-								+ " EXISTS : "
-								+ searchIn.substring(index, 
-										index + medTerm.length() + 1));
+								+ " EXISTS : #"
+								+ securityString +"#");
 						BioEntity e = new MedEntity(jcas);
 						e.setNormalizedForm(medTerm);
 						e.setBegin(beginPost + index);
@@ -111,14 +117,20 @@ public class BioEntityAnnotator extends JCasAnnotator_ImplBase {
 				int index = -1;
 				searchIn = str;
 				while ( (index = searchIn.indexOf(patTerm, fromIndex)) != -1 ) {
+					String securityString = null;
+					if (index > 0) {
+						securityString = searchIn.substring(index-1,
+								index + patTerm.length() + 1);
+					} else {
+						securityString = searchIn.substring(index,
+								index + patTerm.length() + 1);
+					}
 					if (ReaderPOC.exactMatch(patTerm,
-							searchIn.substring(index,
-									index + patTerm.length() + 1))) {
+							securityString)) {
 						containsEntity = true;
 						logger.log(Level.INFO, patTerm
-								+ " EXISTS : "
-								+ searchIn.substring(index, 
-										index + patTerm.length() + 1));
+								+ " EXISTS : #"
+								+ securityString +"#");
 						BioEntity e = new PatEntity(jcas);
 						e.setNormalizedForm(patTerm);
 						e.setBegin(beginPost + index);

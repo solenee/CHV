@@ -19,7 +19,7 @@ public class ReaderPOC {
 			"tumeur", "chirurgie", "ganglion");
 
 	public static boolean exactMatch(String term, String textPlus1) {
-		return StringUtils.strip(textPlus1, ")(!., ").equals(term);
+		return StringUtils.strip(textPlus1, ")(\"=!.,'?\\}{/ ").equals(term);
 	}
 
 	public static void scanPatMed(String corpus) {

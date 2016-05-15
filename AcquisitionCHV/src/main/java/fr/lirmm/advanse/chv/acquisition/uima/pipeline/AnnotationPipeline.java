@@ -24,15 +24,19 @@ public class AnnotationPipeline {
 //		String directory = "src/main/resources/poc";
 		String directory = "src/main/resources/corpus";
 		boolean completeTest = false;
+		boolean annotationHtmlTest = false;
+		boolean makeDA = true;
 		// Run in UIMA pipeline
-		if (completeTest) {
+		if (annotationHtmlTest || completeTest) {
 			TreetaggerCollectionReader reader = (TreetaggerCollectionReader) createReader(TreetaggerCollectionReader.class,
 					TreetaggerCollectionReader.PARAM_DIRECTORY_NAME, directory);
 			AnalysisEngine writer = createEngine(CasToHtmlWriter.class);
 	
 			// Build model : training
 			SimplePipeline.runPipeline(reader, writer);
-		
+		}
+			
+		if (completeTest) {
 			/****************/
 			
 			TreetaggerCollectionReader reader_BioEntity = (TreetaggerCollectionReader) createReader(TreetaggerCollectionReader.class,
@@ -45,15 +49,17 @@ public class AnnotationPipeline {
 		}
 		/****************/
 		
-		TreetaggerCollectionReader reader_ContextTerm = (TreetaggerCollectionReader) createReader(TreetaggerCollectionReader.class,
-				TreetaggerCollectionReader.PARAM_DIRECTORY_NAME, directory);
-
-		// Build model : training
-		SimplePipeline.runPipeline(reader_ContextTerm, 
-				createEngine(BioEntityAnnotator.class),
-				createEngine(ContextTermAnnotator.class),
-				createEngine(ContextComputer.class),
-				createEngine(CasToHtmlWriter_BioEntity.class));
+		if (makeDA) {
+			TreetaggerCollectionReader reader_ContextTerm = (TreetaggerCollectionReader) createReader(TreetaggerCollectionReader.class,
+					TreetaggerCollectionReader.PARAM_DIRECTORY_NAME, directory);
+	
+			// Build model : training
+			SimplePipeline.runPipeline(reader_ContextTerm, 
+					createEngine(BioEntityAnnotator.class),
+					createEngine(ContextTermAnnotator.class),
+					createEngine(ContextComputer.class),
+					createEngine(CasToHtmlWriter_BioEntity.class));
+		}
 	}
 }
 

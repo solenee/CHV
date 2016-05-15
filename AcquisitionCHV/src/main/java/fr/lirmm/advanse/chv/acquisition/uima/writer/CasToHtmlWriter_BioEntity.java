@@ -34,6 +34,9 @@ public class CasToHtmlWriter_BioEntity extends JCasAnnotator_ImplBase {
 		sb.append(LF);
 		sb.append(jcas.getDocumentText());
 		sb.append(LF);
+		logger.log(Level.INFO, sb.toString());
+		
+		sb = new StringBuilder();
 		sb.append("-- Annotation --");
 		sb.append(LF);
 
@@ -44,6 +47,7 @@ public class CasToHtmlWriter_BioEntity extends JCasAnnotator_ImplBase {
 			sb.append("[CoveredText: " + a.getCoveredText() + "] ");
 			sb.append(LF);
 		}
+		logger.log(Level.FINE, sb.toString());
 		
 		// Build HTML file
 		String cssStyle = "<style>\n"
@@ -91,7 +95,7 @@ public class CasToHtmlWriter_BioEntity extends JCasAnnotator_ImplBase {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		logger.log(Level.INFO, sb.toString());
+		
 		/*
 //		ReaderPOC.scanPatMed(jcas.getDocumentText());
 		try {
