@@ -76,7 +76,25 @@
 	  <groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
 	  <artifactId>de.tudarmstadt.ukp.dkpro.core.io.xmi-asl</artifactId>
 	</dependency>
+	<!-- WEKA -->
+	<dependency>
+		<groupId>nz.ac.waikato.cms.weka</groupId>
+		<artifactId>weka-stable</artifactId>
+		<version>3.6.10</version>
+	</dependency>
+<!-- <dependency> -->
+<!--     <groupId>org.json</groupId> -->
+<!--     <artifactId>json</artifactId> -->
+<!--     <version>20160212</version> -->
+<!-- </dependency> -->
+	<!-- JSON -->
+	  <dependency>
+	    <groupId>com.googlecode.json-simple</groupId>
+	    <artifactId>json-simple</artifactId>
+	    <version>1.1</version>
+	  </dependency>
   </dependencies>
+  
   <!-- TreeTagger DKPro 	
 <dependencies>
   <dependency>
