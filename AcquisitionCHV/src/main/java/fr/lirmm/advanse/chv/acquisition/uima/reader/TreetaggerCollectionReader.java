@@ -15,6 +15,7 @@ import org.apache.uima.fit.component.JCasCollectionReader_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.apache.uima.util.Level;
 import org.apache.uima.util.Logger;
 import org.apache.uima.util.Progress;
 import org.apache.uima.util.ProgressImpl;
@@ -176,12 +177,18 @@ public class TreetaggerCollectionReader extends JCasCollectionReader_ImplBase {
 			addPARF(jcas, term.length()+1) ; // because if the blank space 
 		}
 				
+		try {
 		t.setWord(term);
-		t.setPos(items[1].split(":")[0]);
 		t.setLemma(items[2].toLowerCase());
+		t.setPos(items[1].split(":")[0]);
 		t.setBegin(myBegin);
 		t.setEnd(myBegin + t.getWord().length());
 		t.addToIndexes();
+		
+		} catch (ArrayIndexOutOfBoundsException e) {
+			logger.log(Level.SEVERE, "[items.length = "+items.length+"] "+text);
+			throw e;
+		}
 		return res;
 	}
 
