@@ -9,11 +9,14 @@ import org.apache.uima.UIMAFramework;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
+import org.apache.uima.fit.component.JCasConsumer_ImplBase;
+import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Level;
 import org.apache.uima.util.Logger;
+import org.json.simple.JSONObject;
 
 import fr.lirmm.advanse.chv.acquisition.type.BioEntity;
 import fr.lirmm.advanse.chv.acquisition.type.ContextTerm;
@@ -21,17 +24,27 @@ import fr.lirmm.advanse.chv.acquisition.type.Post;
 import fr.lirmm.advanse.chv.acquisition.uima.annotator.BioEntityAnnotator;
 import fr.lirmm.advanse.chv.acquisition.uima.model.impl.ContextVector;
 
-public class ContextComputer extends JCasAnnotator_ImplBase {
+public class ContextComputer extends JCasConsumer_ImplBase {
 
 	Logger logger = UIMAFramework.getLogger(ContextComputer.class);
 	public static final String LF = System.getProperty("line.separator");
 
+	/**
+	 * Second order context vectors for each BioEntity (lay and expert)
+	 */
 	private HashMap<String, ContextVector> contextVectors;
-
-	private int WINDOW_SIZE = 2;
 	
-	public static File PAT_JSON_OUTPUT = new File("pat_context.json");
-	public static File MED_JSON_OUTPUT = new File("med_context.json");
+	public static final String PARAM_WINDOW_SIZE = "WindowSize";
+	@ConfigurationParameter(name = PARAM_WINDOW_SIZE, description = "The size of the sliding window", mandatory = false, defaultValue="2")
+	private int WINDOW_SIZE;
+	
+	public static final String PARAM_WORKSPACE_NAME = "WorkspaceName";
+	@ConfigurationParameter(name = PARAM_WORKSPACE_NAME, description = "The name of the directory corresponding to the nodeScope", mandatory = true)
+	private File nodeWorkspace;
+	
+	private File pat_json_output;
+	private File med_json_output;
+	
 
 	@Override
 	public void initialize(UimaContext context)
@@ -44,6 +57,8 @@ public class ContextComputer extends JCasAnnotator_ImplBase {
 		for (String term : BioEntityAnnotator.MEDECIN_TARGETS) {
 			contextVectors.put(term, new ContextVector());
 		}
+		pat_json_output = new File(nodeWorkspace.getAbsolutePath()+"/output/pat_context.json");
+		med_json_output = new File(nodeWorkspace.getAbsolutePath()+"/output/med_context.json");
 	}
 
 	@Override
@@ -92,11 +107,11 @@ public class ContextComputer extends JCasAnnotator_ImplBase {
 		String contentPat = sbPat.substring(0, sbPat.length()-1)+"\n}";
 		String contentMed = sbMed.substring(0, sbMed.length()-1)+"\n}";
 		try {
-			FileUtils.write(PAT_JSON_OUTPUT, contentPat);//, "UTF-8");
-			FileUtils.write(MED_JSON_OUTPUT, contentMed);//, "UTF-8");
+			FileUtils.write(pat_json_output, contentPat);//, "UTF-8");
+			FileUtils.write(med_json_output, contentMed);//, "UTF-8");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-
+	
 }

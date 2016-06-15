@@ -20,6 +20,7 @@ import org.apache.uima.util.Logger;
 import org.apache.uima.util.Progress;
 import org.apache.uima.util.ProgressImpl;
 
+import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import fr.lirmm.advanse.chv.definitionMining.uima.type.TokenTreetagger;
 
 /**
@@ -63,6 +64,7 @@ public class TreetaggerCollectionReader extends JCasCollectionReader_ImplBase {
 				Progress.ENTITIES) };
 	}
 	
+	@Deprecated
 	public void getNext_deprecated(JCas jcas) throws IOException, CollectionException {
 		File f = documents.get(i);
 		String s = "";
@@ -91,6 +93,7 @@ public class TreetaggerCollectionReader extends JCasCollectionReader_ImplBase {
 		jcas.setDocumentText(s);
 		jcas.setDocumentLanguage(documentLanguage);
 
+		
 		// Iterate
 		i++;
 	}
@@ -120,7 +123,10 @@ public class TreetaggerCollectionReader extends JCasCollectionReader_ImplBase {
 		// Set JCas text
 		jcas.setDocumentText(s);
 		jcas.setDocumentLanguage(documentLanguage);
-
+		
+		// Enable serialization
+		enableSerialization(jcas, f.getName());		
+		
 		// Iterate
 		i++;
 	}
@@ -192,4 +198,21 @@ public class TreetaggerCollectionReader extends JCasCollectionReader_ImplBase {
 		return res;
 	}
 
+	private void enableSerialization(JCas jCas, String documentId) {
+		// This is needed - set BaseURI or documentId property
+        final DocumentMetaData metaData = new DocumentMetaData(jCas);
+
+        metaData.setDocumentId(documentId);
+
+        /*
+         * If the code below were uncommented, the URI property would take 
+         * precedence over the document ID and the writer would create a 
+         * subdirectory 'docs' in the caching directory and put the serialized 
+         * CAS there.
+         */
+        // metaData.setDocumentUri("file:///tmp/docs/document1.txt");
+        // metaData.setDocumentBaseUri("file:///tmp/");
+
+        metaData.addToIndexes();
+	}
 }

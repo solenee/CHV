@@ -3,15 +3,28 @@ package fr.lirmm.advanse.chv.acquisition.uima.pipeline;
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngine;
 import static org.apache.uima.fit.factory.CollectionReaderFactory.createReader;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.uima.UIMAException;
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.analysis_engine.AnalysisEngine;
+import org.apache.uima.analysis_engine.AnalysisEngineDescription;
+import org.apache.uima.collection.CollectionReaderDescription;
+import org.apache.uima.fit.component.CasDumpWriter;
+import org.apache.uima.fit.factory.AnalysisEngineFactory;
+import org.apache.uima.fit.factory.CollectionReaderFactory;
+import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
+import org.apache.uima.jcas.JCas;
 import org.apache.uima.util.Level;
 import org.apache.uima.util.Logger;
 
+import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
+import de.tudarmstadt.ukp.dkpro.core.io.xmi.XmiReader;
+import de.tudarmstadt.ukp.dkpro.core.io.xmi.XmiWriter;
 import fr.lirmm.advanse.chv.acquisition.uima.ConfigurationException;
 import fr.lirmm.advanse.chv.acquisition.uima.annotator.BioEntityAnnotator;
 import fr.lirmm.advanse.chv.acquisition.uima.annotator.ContextTermAnnotator;
@@ -31,6 +44,7 @@ public class AnnotationPipeline {
 	public static void main(String[] args) throws UIMAException, IOException {
 		Logger logger = UIMAFramework.getLogger(AnnotationPipeline.class);
 		
+		boolean serialize = true;
 		String corpus_directory;
 		int window_size;
 		
@@ -52,7 +66,7 @@ public class AnnotationPipeline {
 				throw new ConfigurationException("Second parameter (window size) should be an integer");
 			}
 		  	// Run pipeline
-			getContexts(corpus_directory, window_size);
+			getContexts(corpus_directory, window_size, serialize);
 		} catch (ConfigurationException e) {
 			logger.log(Level.SEVERE, "Exception : " + e.getMessage());
 			printIndications();
@@ -128,13 +142,15 @@ public class AnnotationPipeline {
 	 * Lauch distributional analysis on the corpora present in the directory corpus_directory
 	 * @param corpus_directory
 	 * @param window_size
+	 * @param serialize
 	 * @throws UIMAException
 	 * @throws IOException
 	 */
-	public static void getContexts(String corpus_directory, int window_size) throws UIMAException, IOException {
+	public static void getContexts(String corpus_directory, int window_size, boolean serialize) throws UIMAException, IOException {
 	  	// Run pipeline
 		TreetaggerCollectionReader reader_ContextTerm = (TreetaggerCollectionReader) createReader(TreetaggerCollectionReader.class,
 				TreetaggerCollectionReader.PARAM_DIRECTORY_NAME, corpus_directory);
+		if (!serialize) {
 		SimplePipeline.runPipeline(reader_ContextTerm, 
 				createEngine(BioEntityAnnotator.class,
 						BioEntityAnnotator.PARAM_WORKSPACE_NAME, corpus_directory),
@@ -144,6 +160,52 @@ public class AnnotationPipeline {
 						ContextComputer.PARAM_WINDOW_SIZE, window_size,
 						ContextComputer.PARAM_WORKSPACE_NAME, corpus_directory),
 				createEngine(CasToHtmlWriter_BioEntity.class));
+		} else {
+			boolean deleteOldCache = false;
+	        final File cachingDirectory = new File("src/main/resources/cached_cases/");
+	        // Delete old cached documents
+	        if (deleteOldCache && cachingDirectory.exists()) {
+	        	FileUtils.deleteDirectory(cachingDirectory);
+	        }
+	        cachingDirectory.mkdir();
+
+	        if (cachingDirectory.listFiles().length == 0) {
+	            UIMAFramework.getLogger().log(Level.INFO, "No cached CASES found.");
+	            
+	            
+	            SimplePipeline.runPipeline(reader_ContextTerm, 
+	    				createEngine(BioEntityAnnotator.class,
+	    						BioEntityAnnotator.PARAM_WORKSPACE_NAME, corpus_directory),
+	    				createEngine(ContextTermAnnotator.class,
+	    						ContextTermAnnotator.PARAM_WORKSPACE_NAME, corpus_directory),
+	    				createEngine(ContextComputer.class,
+	    						ContextComputer.PARAM_WINDOW_SIZE, window_size,
+	    						ContextComputer.PARAM_WORKSPACE_NAME, corpus_directory),
+	    				createEngine(XmiWriter.class, XmiWriter.PARAM_TARGET_LOCATION,
+	    			              cachingDirectory)
+	    				//createEngine(CasToHtmlWriter_BioEntity.class));
+	    			    );
+
+	            UIMAFramework.getLogger().log(Level.INFO,
+	                    "Files in caching directory: " + Arrays.toString(cachingDirectory.listFiles()));
+	        }
+	        else {
+	            UIMAFramework.getLogger().log(Level.INFO, "Loading cached CASes...");
+	            final CollectionReaderDescription xmiReader = CollectionReaderFactory
+	                    .createReaderDescription(XmiReader.class, XmiReader.PARAM_SOURCE_LOCATION,
+	                            cachingDirectory.getAbsolutePath(), XmiReader.PARAM_PATTERNS,
+	                            "[+]*.xmi");
+	            SimplePipeline.runPipeline(
+	            		createReader(XmiReader.class, XmiReader.PARAM_SOURCE_LOCATION,
+	                            cachingDirectory.getAbsolutePath(), XmiReader.PARAM_PATTERNS,
+	                            "[+]*.xmi"),
+	                            createEngine(ContextComputer.class,
+	            						ContextComputer.PARAM_WINDOW_SIZE, window_size,
+	            						ContextComputer.PARAM_WORKSPACE_NAME, corpus_directory),
+	                            createEngine(CasToHtmlWriter_BioEntity.class),
+	                            createEngine(CasDumpWriter.class));
+	        }
+		}
 		
 	}
 }

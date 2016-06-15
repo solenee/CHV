@@ -21,6 +21,9 @@ import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.io.xmi.XmiReader;
 import de.tudarmstadt.ukp.dkpro.core.io.xmi.XmiWriter;
 
+import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngine;
+import static org.apache.uima.fit.factory.CollectionReaderFactory.createReader;
+
 /**
  * This tutorial demonstrates how to serialize JCas objects easily with DKPro Core's 
  * {@link XmiWriter} and {@link XmiReader}.
@@ -38,7 +41,7 @@ public class XmiSerializationTutorial
         throws UIMAException, IOException
     {
     	boolean deleteOldCache = false;
-        final File cachingDirectory = new File("./target/cached_cases/");
+        final File cachingDirectory = new File("src/main/resources/cached_cases/");
         // Delete old cached documents
         if (deleteOldCache && cachingDirectory.exists()) {
         	FileUtils.deleteDirectory(cachingDirectory);
@@ -67,7 +70,9 @@ public class XmiSerializationTutorial
             final AnalysisEngineDescription xmiWriter = AnalysisEngineFactory
                     .createEngineDescription(XmiWriter.class, XmiWriter.PARAM_TARGET_LOCATION,
                             cachingDirectory);
-            SimplePipeline.runPipeline(jCas, xmiWriter);
+//            SimplePipeline.runPipeline(jCas, xmiWriter);
+            SimplePipeline.runPipeline(jCas, createEngine(XmiWriter.class, XmiWriter.PARAM_TARGET_LOCATION,
+                    cachingDirectory));
 
             UIMAFramework.getLogger().log(Level.INFO,
                     "Files in caching directory: " + Arrays.toString(cachingDirectory.listFiles()));
@@ -78,8 +83,13 @@ public class XmiSerializationTutorial
                     .createReaderDescription(XmiReader.class, XmiReader.PARAM_SOURCE_LOCATION,
                             cachingDirectory.getAbsolutePath(), XmiReader.PARAM_PATTERNS,
                             "[+]*.xmi");
-            SimplePipeline.runPipeline(xmiReader,
-                    AnalysisEngineFactory.createEngineDescription(CasDumpWriter.class));
+//            SimplePipeline.runPipeline(xmiReader,
+//                    AnalysisEngineFactory.createEngineDescription(CasDumpWriter.class));
+            SimplePipeline.runPipeline(
+            		createReader(XmiReader.class, XmiReader.PARAM_SOURCE_LOCATION,
+                            cachingDirectory.getAbsolutePath(), XmiReader.PARAM_PATTERNS,
+                            "[+]*.xmi"),
+                    createEngine(CasDumpWriter.class));
         }
     }
 

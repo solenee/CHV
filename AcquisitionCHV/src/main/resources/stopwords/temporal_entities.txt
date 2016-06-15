@@ -1,0 +1,78 @@
+lundi
+mardi
+mercredi
+jeudi
+vendredi
+samedi
+dimanche
+janvier
+février
+mars
+avril
+mai
+juin
+juillet
+août
+aout
+septembre
+octobre
+novembre
+décembre
+decembre
+aujourd'hui
+aujourdhui
+aujourd hui
+hier
+veille
+la veille
+demain
+lendemain
+le lendemain
+matin
+midi
+journée
+après-midi
+apres-midi
+après midi
+apres midi
+soir
+soirée
+soiree
+nuit
+temps
+heure
+heures
+jours
+jour
+semaines
+semaines prochaines
+semaine
+semaine prochaine
+mois
+mois prochain
+mois prochains
+années
+années prochaines
+annees
+annees prochaines
+année
+année prochaine
+annee
+annee prochaine
+an
+an prochain
+ans
+ans prochains
+moment
+moments
+fin
+début
+debut
+centre
+nord
+est
+ouest
+date
+dates
+bientôt
+bientot

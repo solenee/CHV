@@ -50,7 +50,6 @@ public class ContextVector implements IContextVector {
 		for (String item : context.keySet()) {
 			obj.put(item, context.get(item));
 		}
-		// Remove ","
 		return obj.toString();
 	}
 	
