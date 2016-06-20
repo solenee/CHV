@@ -95,6 +95,84 @@ public class AnnotationPipeline {
 				);
 	}
 
+		
+	/**
+	 * Lauch distributional analysis on the corpora present in the directory corpus_directory
+	 * @param corpus_directory
+	 * @param window_size
+	 * @param serialize
+	 * @throws UIMAException
+	 * @throws IOException
+	 */
+	public static void getContexts(String corpus_directory, int window_size, boolean serialize) throws UIMAException, IOException {
+	  	// Run pipeline
+		TreetaggerCollectionReader reader_ContextTerm = (TreetaggerCollectionReader) createReader(TreetaggerCollectionReader.class,
+				TreetaggerCollectionReader.PARAM_DIRECTORY_NAME, corpus_directory);
+		if (!serialize) {
+		SimplePipeline.runPipeline(reader_ContextTerm, 
+				createEngine(BioEntityAnnotator.class,
+						BioEntityAnnotator.PARAM_WORKSPACE_NAME, corpus_directory),
+				createEngine(ContextTermAnnotator.class,
+						ContextTermAnnotator.PARAM_WORKSPACE_NAME, corpus_directory),
+				createEngine(ContextComputer.class,
+						ContextComputer.PARAM_WINDOW_SIZE, window_size,
+						ContextComputer.PARAM_WORKSPACE_NAME, corpus_directory),
+				createEngine(CasToHtmlWriter_BioEntity.class));
+		} else {
+			boolean deleteOldCache = false;
+	        final File cachingDirectory = new File("src/main/resources/cached_cases/");
+	        // Delete old cached documents
+	        if (deleteOldCache && cachingDirectory.exists()) {
+	        	FileUtils.deleteDirectory(cachingDirectory);
+	        }
+	        cachingDirectory.mkdir();
+
+	        if (cachingDirectory.listFiles().length == 0) {
+	            UIMAFramework.getLogger().log(Level.INFO, "No cached CASES found.");
+	            
+	            
+	            SimplePipeline.runPipeline(reader_ContextTerm, 
+	            		createEngine(XmiWriter.class, XmiWriter.PARAM_TARGET_LOCATION,
+	    			              cachingDirectory),
+	    				createEngine(BioEntityAnnotator.class,
+	    						BioEntityAnnotator.PARAM_WORKSPACE_NAME, corpus_directory),
+	    				createEngine(ContextTermAnnotator.class,
+	    						ContextTermAnnotator.PARAM_WORKSPACE_NAME, corpus_directory),
+	    				createEngine(ContextComputer.class,
+	    						ContextComputer.PARAM_WINDOW_SIZE, window_size,
+	    						ContextComputer.PARAM_WORKSPACE_NAME, corpus_directory)
+	    				//, createEngine(CasToHtmlWriter_BioEntity.class));
+	    			    );
+
+	            UIMAFramework.getLogger().log(Level.INFO,
+	                    "Files in caching directory: " + Arrays.toString(cachingDirectory.listFiles()));
+	        }
+	        else {
+	            UIMAFramework.getLogger().log(Level.INFO, "Loading cached CASes...");
+	            final CollectionReaderDescription xmiReader = CollectionReaderFactory
+	                    .createReaderDescription(XmiReader.class, XmiReader.PARAM_SOURCE_LOCATION,
+	                            cachingDirectory.getAbsolutePath(), XmiReader.PARAM_PATTERNS,
+	                            "[+]*.xmi");
+	            SimplePipeline.runPipeline(
+	            		createReader(XmiReader.class, XmiReader.PARAM_SOURCE_LOCATION,
+	                            cachingDirectory.getAbsolutePath(), XmiReader.PARAM_PATTERNS,
+	                            "[+]*.xmi"),
+	                            createEngine(BioEntityAnnotator.class,
+	    	    						BioEntityAnnotator.PARAM_WORKSPACE_NAME, corpus_directory),
+	    	    				createEngine(ContextTermAnnotator.class,
+	    	    						ContextTermAnnotator.PARAM_WORKSPACE_NAME, corpus_directory),
+	                            createEngine(ContextComputer.class,
+	            						ContextComputer.PARAM_WINDOW_SIZE, window_size,
+	            						ContextComputer.PARAM_WORKSPACE_NAME, corpus_directory)
+	            				//, createEngine(CasToHtmlWriter_BioEntity.class)
+	                            //, createEngine(CasDumpWriter.class)
+	                            );
+	        }
+		}
+	}
+
+	
+	@Deprecated
 	public static void mainDev(String[] args) throws UIMAException, IOException {
 
 //		String directory = "src/main/resources/poc";
@@ -137,76 +215,6 @@ public class AnnotationPipeline {
 					createEngine(CasToHtmlWriter_BioEntity.class));
 		}
 	}
-	
-	/**
-	 * Lauch distributional analysis on the corpora present in the directory corpus_directory
-	 * @param corpus_directory
-	 * @param window_size
-	 * @param serialize
-	 * @throws UIMAException
-	 * @throws IOException
-	 */
-	public static void getContexts(String corpus_directory, int window_size, boolean serialize) throws UIMAException, IOException {
-	  	// Run pipeline
-		TreetaggerCollectionReader reader_ContextTerm = (TreetaggerCollectionReader) createReader(TreetaggerCollectionReader.class,
-				TreetaggerCollectionReader.PARAM_DIRECTORY_NAME, corpus_directory);
-		if (!serialize) {
-		SimplePipeline.runPipeline(reader_ContextTerm, 
-				createEngine(BioEntityAnnotator.class,
-						BioEntityAnnotator.PARAM_WORKSPACE_NAME, corpus_directory),
-				createEngine(ContextTermAnnotator.class,
-						ContextTermAnnotator.PARAM_WORKSPACE_NAME, corpus_directory),
-				createEngine(ContextComputer.class,
-						ContextComputer.PARAM_WINDOW_SIZE, window_size,
-						ContextComputer.PARAM_WORKSPACE_NAME, corpus_directory),
-				createEngine(CasToHtmlWriter_BioEntity.class));
-		} else {
-			boolean deleteOldCache = false;
-	        final File cachingDirectory = new File("src/main/resources/cached_cases/");
-	        // Delete old cached documents
-	        if (deleteOldCache && cachingDirectory.exists()) {
-	        	FileUtils.deleteDirectory(cachingDirectory);
-	        }
-	        cachingDirectory.mkdir();
 
-	        if (cachingDirectory.listFiles().length == 0) {
-	            UIMAFramework.getLogger().log(Level.INFO, "No cached CASES found.");
-	            
-	            
-	            SimplePipeline.runPipeline(reader_ContextTerm, 
-	    				createEngine(BioEntityAnnotator.class,
-	    						BioEntityAnnotator.PARAM_WORKSPACE_NAME, corpus_directory),
-	    				createEngine(ContextTermAnnotator.class,
-	    						ContextTermAnnotator.PARAM_WORKSPACE_NAME, corpus_directory),
-	    				createEngine(ContextComputer.class,
-	    						ContextComputer.PARAM_WINDOW_SIZE, window_size,
-	    						ContextComputer.PARAM_WORKSPACE_NAME, corpus_directory),
-	    				createEngine(XmiWriter.class, XmiWriter.PARAM_TARGET_LOCATION,
-	    			              cachingDirectory)
-	    				//createEngine(CasToHtmlWriter_BioEntity.class));
-	    			    );
-
-	            UIMAFramework.getLogger().log(Level.INFO,
-	                    "Files in caching directory: " + Arrays.toString(cachingDirectory.listFiles()));
-	        }
-	        else {
-	            UIMAFramework.getLogger().log(Level.INFO, "Loading cached CASes...");
-	            final CollectionReaderDescription xmiReader = CollectionReaderFactory
-	                    .createReaderDescription(XmiReader.class, XmiReader.PARAM_SOURCE_LOCATION,
-	                            cachingDirectory.getAbsolutePath(), XmiReader.PARAM_PATTERNS,
-	                            "[+]*.xmi");
-	            SimplePipeline.runPipeline(
-	            		createReader(XmiReader.class, XmiReader.PARAM_SOURCE_LOCATION,
-	                            cachingDirectory.getAbsolutePath(), XmiReader.PARAM_PATTERNS,
-	                            "[+]*.xmi"),
-	                            createEngine(ContextComputer.class,
-	            						ContextComputer.PARAM_WINDOW_SIZE, window_size,
-	            						ContextComputer.PARAM_WORKSPACE_NAME, corpus_directory),
-	                            createEngine(CasToHtmlWriter_BioEntity.class),
-	                            createEngine(CasDumpWriter.class));
-	        }
-		}
-		
-	}
 }
 
