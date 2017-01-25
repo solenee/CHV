@@ -10,7 +10,7 @@ import org.apache.uima.jcas.cas.TOP_Type;
 
 
 /** 
- * Updated by JCasGen Sat May 14 01:04:06 CEST 2016
+ * Updated by JCasGen Fri May 20 16:47:12 CEST 2016
  * XML source: /home/monordi/CHV/AcquisitionCHV/src/main/resources/desc/type/Acquisition.xml
  * @generated */
 public class MedEntity extends BioEntity {

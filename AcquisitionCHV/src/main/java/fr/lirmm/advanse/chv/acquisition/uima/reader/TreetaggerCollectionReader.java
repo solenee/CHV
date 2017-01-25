@@ -1,5 +1,6 @@
 package fr.lirmm.advanse.chv.acquisition.uima.reader;
 
+import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.UimaContext;
 import org.apache.uima.collection.CollectionException;
@@ -41,6 +43,10 @@ public class TreetaggerCollectionReader extends JCasCollectionReader_ImplBase {
 	public static final String PARAM_DIRECTORY_NAME = "DirectoryName";
 	@ConfigurationParameter(name = PARAM_DIRECTORY_NAME, description = "The name of the directory of text files to be read", mandatory = true)
 	private File dir;
+	
+	public static final String PARAM_SERIALIZE = "Serialize";
+	@ConfigurationParameter(name = PARAM_SERIALIZE, description = "Whether the cases initialized here will be serialized", mandatory = true)
+	private Boolean serialize;
 
 	/** Documents list */
 	private List<File> documents;
@@ -108,10 +114,39 @@ public class TreetaggerCollectionReader extends JCasCollectionReader_ImplBase {
 		String line = "";
 		while ((line = b.readLine()) != null) {
 			//System.out.println(line);
-			if (line.contains("#END#")) {
+			if (line.contains("#END#") || line.contains("#end#")) {
 				s += "\n"; 
 				begin++;				
 			} else {
+				if (serialize) {
+					//logger.log(Level.INFO, "[BEFORE]"+line);
+					//line = org.apache.commons.lang3.StringEscapeUtils.escapeXml10(line);
+//					.replace("&", "&amp;")
+//							.replace("<", "&lt;")
+//							.replace(">", "&gt;")
+//							.replace("\"", "&quot;")
+//							.replace("\'", "&apos;")
+//							.replace("&lt;unknown&gt;", "<unknown>");
+					//logger.log(Level.INFO, "[AFTER]"+line);
+					if ((new Font("font", 2, 3)).canDisplayUpTo(line) > -1) {
+						logger.log(Level.SEVERE, "[=Font=========]"+line);
+//						logger.log(Level.SEVERE, "[==========]"+(new Font("font", 2, 3)).canDisplayUpTo(line));
+////						logger.log(Level.INFO, "[BEFORE]"+line);
+//						line = org.apache.commons.lang3.StringEscapeUtils.escapeXml10(line);
+//						logger.log(Level.INFO, "[AFTER]"+line);
+						// Escape 
+						continue;
+						//System.exit(1);
+					}
+					
+					//if (line.contains("😉")) {//matches("![^\\x00-\\x7f-\\x80-\\xad]")) {
+					//if (line.matches("(.)*[^\\x00-\\x7f-\\x80-\\xad](.)*")) {
+					if (line.split("\t")[0].matches("(.)*[^\\x00-\\xFF](.)*")) {
+						logger.log(Level.SEVERE, "[=[^\\x00-\\xFF]=========]"+line);
+						//System.exit(1);
+						continue;
+					}
+				}
 				String res = treetaggerToTokenPAR(line, begin, jcas);
 				s += res + " ";
 				//System.out.println(s.substring(begin, token.getEnd()));
@@ -170,6 +205,12 @@ public class TreetaggerCollectionReader extends JCasCollectionReader_ImplBase {
 		String items[] = text.split("\t");
 		TokenTreetagger t = new TokenTreetagger(jcas);
 		String term = items[0].toLowerCase().trim();
+		//if (!term.matches("\\w")) {
+//			logger.log(Level.INFO, "[BEFORE]"+term);
+//			term = org.apache.commons.lang3.StringEscapeUtils.escapeXml10(term);
+//			logger.log(Level.INFO, "[AFTER]"+term);
+			
+		//}
 		String res = term;
 		
 		if ( term.startsWith("(") && !term.equals("(") ) {

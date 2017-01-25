@@ -11,7 +11,7 @@ import org.apache.uima.cas.impl.TypeImpl;
 import org.apache.uima.cas.Type;
 
 /** BioMedical entity which expertise level is patient
- * Updated by JCasGen Sat May 14 01:04:06 CEST 2016
+ * Updated by JCasGen Fri May 20 16:47:12 CEST 2016
  * @generated */
 public class PatEntity_Type extends BioEntity_Type {
   /** @generated 

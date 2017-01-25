@@ -7,17 +7,19 @@ import org.apache.commons.io.FileUtils;
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
+import org.apache.uima.fit.component.JCasConsumer_ImplBase;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.util.Level;
 import org.apache.uima.util.Logger;
 
+import de.tudarmstadt.ukp.dkpro.core.api.io.JCasFileWriter_ImplBase;
 import fr.lirmm.advanse.chv.acquisition.type.BioEntity;
 import fr.lirmm.advanse.chv.acquisition.type.MedEntity;
 import fr.lirmm.advanse.chv.acquisition.type.PatEntity;
 import fr.lirmm.advanse.chv.acquisition.type.Post;
 
-public class CasToHtmlWriter_BioEntity extends JCasAnnotator_ImplBase {
+public class CasToHtmlWriter_BioEntity extends JCasConsumer_ImplBase {
 
 	Logger logger = UIMAFramework.getLogger(CasToHtmlWriter_BioEntity.class);
 	public static final String LF = System.getProperty("line.separator");
@@ -32,7 +34,7 @@ public class CasToHtmlWriter_BioEntity extends JCasAnnotator_ImplBase {
 		sb.append(LF);
 		sb.append("-- Document Text --");
 		sb.append(LF);
-		sb.append(jcas.getDocumentText());
+		//sb.append(jcas.getDocumentText());
 		sb.append(LF);
 		logger.log(Level.INFO, sb.toString());
 		

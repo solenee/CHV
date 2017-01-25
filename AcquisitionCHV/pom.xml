@@ -3,7 +3,8 @@
   <parent>
     <groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
     <artifactId>dkpro-parent-pom</artifactId>
-    <version>6</version>
+<!--     <version>6</version> -->
+	<version>7</version>
   </parent>
   <groupId>de.tudarmstadt.lt.teaching.nlp4web.project</groupId>
   <artifactId>AcquisitionCHV</artifactId>
@@ -13,7 +14,9 @@
   		<dependency>
   			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
   			<artifactId>de.tudarmstadt.ukp.dkpro.core-asl</artifactId>
-  			<version>1.6.0</version>
+<!--   			<version>1.8.0</version> -->
+  			<version>1.7.0</version>
+<!--   			<version>1.6.0</version> -->
   			<type>pom</type>
   			<scope>import</scope>
   		</dependency>
@@ -58,7 +61,7 @@
 	<dependency>
 		<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
 		<artifactId>de.tudarmstadt.ukp.dkpro.core.treetagger-asl</artifactId>
-		<version>1.7.0</version>
+<!-- 		<version>1.7.0</version> -->
 	</dependency>
 	<!-- HtmlUnit -->
 	<dependency>
@@ -161,7 +164,7 @@
               -->
 <!--               <outputFile>${project.build.directory}/${artifactId}-${version}-standalone.jar</outputFile> -->
             </transformers>
-            <outputFile>${project.build.directory}/${artifactId}-${version}-standalone-nodeScope.jar</outputFile>
+            <outputFile>${project.build.directory}/${project.artifactId}-${project.version}-standalone-nodeScope.jar</outputFile>
           </configuration>
         </execution>
       </executions>

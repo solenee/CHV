@@ -14,7 +14,7 @@ import org.apache.uima.cas.Feature;
 import org.apache.uima.jcas.tcas.Annotation_Type;
 
 /** Model a single post on a forum
- * Updated by JCasGen Sat May 14 01:04:07 CEST 2016
+ * Updated by JCasGen Fri May 20 16:47:12 CEST 2016
  * @generated */
 public class Post_Type extends Annotation_Type {
   /** @generated 
