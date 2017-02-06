@@ -133,10 +133,11 @@ public class AnnotationPipeline {
 	            
 	            
 	            SimplePipeline.runPipeline(reader_ContextTerm, 
+/*<<<<<<< HEAD
 //	            		createEngine(XmiWriter.class, XmiWriter.PARAM_TARGET_LOCATION,
 //	    			              cachingDirectory),
 //	    				createEngine(BioEntityAnnotator.class,
-//	    						BioEntityAnnotator.PARAM_WORKSPACE_NAME, corpus_directory),
+//	    						BioEntityAnnotator.PARAM_WORKSPACE_NAME, corpus_directory),*/
 	    				createEngine(ContextTermAnnotator.class,
 	    						ContextTermAnnotator.PARAM_WORKSPACE_NAME, corpus_directory),
 	    						createEngine(XmiWriter.class, XmiWriter.PARAM_TARGET_LOCATION,
@@ -145,6 +146,18 @@ public class AnnotationPipeline {
 //	    						ContextComputer.PARAM_WINDOW_SIZE, window_size,
 //	    						ContextComputer.PARAM_WORKSPACE_NAME, corpus_directory)
 	    				createEngine(CasToHtmlWriter_BioEntity.class)
+/*=======
+	            		createEngine(XmiWriter.class, XmiWriter.PARAM_TARGET_LOCATION,
+	    			              cachingDirectory),
+	    				createEngine(BioEntityAnnotator.class,
+	    						BioEntityAnnotator.PARAM_WORKSPACE_NAME, corpus_directory),
+	    				createEngine(ContextTermAnnotator.class,
+	    						ContextTermAnnotator.PARAM_WORKSPACE_NAME, corpus_directory),
+	    				createEngine(ContextComputer.class,
+	    						ContextComputer.PARAM_WINDOW_SIZE, window_size,
+	    						ContextComputer.PARAM_WORKSPACE_NAME, corpus_directory)
+	    				//, createEngine(CasToHtmlWriter_BioEntity.class));
+>>>>>>> 83d0b099584ef8e76219de8f0f09ab1419c40cec*/
 	    			    );
 
 	            UIMAFramework.getLogger().log(Level.INFO,
